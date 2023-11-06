@@ -1,0 +1,27 @@
+{
+  "name": "butic-issues",
+  "version": "1.0.0",
+  "description": "Mi primera aplicación de Autodesk APS, sirve para crear y gestionar incidencias en modelos BIM.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server",
+    "server": "nodemon server"
+  },
+  "keywords": [
+    "APS",
+    "Forge",
+    "Butic",
+    "Issues"
+  ],
+  "author": "Adrián Used Vivas",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "express-formidable": "^1.2.0",
+    "forge-apis": "^0.9.7"
+  },
+  "devDependencies": {
+    "dotenv": "^16.3.1",
+    "nodemon": "^3.0.1"
+  }
+}
