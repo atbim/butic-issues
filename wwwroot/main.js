@@ -8,11 +8,36 @@ const miPrimeraFuncion = () => {
 }
 
 const onButtonClick = () => {
+  const red = new THREE.Vector4(1, 0, 0, 1)
   const query = document.getElementById('query')
   NOP_VIEWER.search(query.value, (dbIds) => {
     NOP_VIEWER.isolate(dbIds)
     NOP_VIEWER.fitToView(dbIds)
-    NOP_VIEWER.clearSelection()
+    NOP_VIEWER.model.getBulkProperties(dbIds, ['Length', 'Area', 'Volume'], (res) => {
+      let suma = {
+        count: res.length,
+        length: 0.00,
+        area: 0.00,
+        volume: 0.00
+      }
+      res.forEach(item => {
+        const length = item.properties.find(x => x.displayName === 'Length')
+        if (length) {
+          suma.length += length.displayValue
+        }
+        const area = item.properties.find(x => x.displayName === 'Area')
+        if (area) {
+          suma.area += area.displayValue
+        }
+        const volume = item.properties.find(x => x.displayName === 'Volume')
+        if (volume) {
+          suma.volume += volume.displayValue
+        }
+      })
+      const textoArea = document.getElementById('textoArea')
+      textoArea.textContent = `El sumatorio de Área de la búsqueda es ${suma.area.toFixed(2)} m2.`
+      console.log(suma)
+    })
   })
 }
 

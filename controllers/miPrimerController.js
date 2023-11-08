@@ -1,4 +1,4 @@
-const miPrimerEndpoint = (req, res, next) => {
+const miPrimeraFuncion = (req, res, next) => {
   try {
     const a = Number.parseInt(req.query.a)
     const b = Number.parseInt(req.query.b)
@@ -14,7 +14,7 @@ const miPrimerEndpoint = (req, res, next) => {
   }
 }
 
-const miSegundoEndpoint = (req, res, next) => {
+const miSegundaFuncion = (req, res, next) => {
   try {
     const { a, b } = req.body
     res.json({
@@ -28,4 +28,26 @@ const miSegundoEndpoint = (req, res, next) => {
   }
 }
 
-module.exports = { miPrimerEndpoint, miSegundoEndpoint }
+const miTerceraFunction = (req, res, next) => {
+  try {
+    const id = req.params.id
+    res.send(`Hola ${id} 👋`)
+  } catch (error) {}
+}
+
+const miCuartaFuncion = (req, res, next) => {
+  try {
+    const { id } = req.params
+    res.json({
+      status: 'success',
+      message: `Este es el estado de ${id}.`,
+    })
+  } catch (error) { }
+}
+
+module.exports = {
+  miPrimeraFuncion,
+  miSegundaFuncion,
+  miTerceraFunction,
+  miCuartaFuncion,
+}

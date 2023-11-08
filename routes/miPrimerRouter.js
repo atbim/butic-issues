@@ -5,7 +5,15 @@ const router = express.Router()
 
 router
   .route('/')
-  .get(miPrimerController.miPrimerEndpoint)
-  .post(miPrimerController.miSegundoEndpoint)
+  .get(miPrimerController.miPrimeraFuncion)
+  .post(miPrimerController.miSegundaFuncion)
+
+router
+  .route('/:id')
+  .get(miPrimerController.miTerceraFunction)
+
+router
+  .route('/:id/status')
+  .get(miPrimerController.miCuartaFuncion)
 
 module.exports = router
