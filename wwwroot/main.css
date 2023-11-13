@@ -6,11 +6,27 @@ html {
     font-family: ArtifaktElement;
 }
 
+h1 {
+    margin: 20px;
+}
+
+.container {
+    display: flex;
+    height: calc(100vh - 3em);
+}
+
 #header,
-#preview,
 #overlay {
-    position: absolute;
     width: 100%;
+}
+
+#panel {
+    flex: 40%;
+}
+
+#preview {
+    position: relative;
+    flex: 60%;
 }
 
 #header {
@@ -21,7 +37,6 @@ html {
     align-items: center;
 }
 
-#preview,
 #overlay {
     top: 3em;
     bottom: 0;
