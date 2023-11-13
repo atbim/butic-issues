@@ -1,10 +1,29 @@
 import { initViewer, loadModel } from './viewer.js'
 
-const miPrimeraFuncion = () => {
+const miPrimeraFuncion = async () => {
   const button = document.getElementById('myFirstButton')
   const resetButton = document.getElementById('resetButton')
+  const getIssuesButton = document.getElementById('getIssuesButton')
   button.addEventListener('click', onButtonClick)
   resetButton.addEventListener('click', onResetClick)
+  
+  const res = await fetch('/api/issues')
+    const json = await res.json()
+    const issuesDiv = document.getElementById('issues')
+    issuesDiv.innerHTML = ''
+    const issuesList = document.createElement('ul')
+    json.data.forEach(issue => {
+      const issueItem = document.createElement('li')
+      issueItem.textContent = issue.name
+      issueItem.id = issue._id
+      issueItem.addEventListener('click', (e) => {
+        const issueId = e.currentTarget.id
+        alert(`Has clicado en el Issue: ${issueId}`)
+        NOP_VIEWER.select([2213, 2590])
+      })
+      issuesList.appendChild(issueItem)
+    })
+    issuesDiv.appendChild(issuesList)
 }
 
 const onButtonClick = () => {
@@ -13,31 +32,37 @@ const onButtonClick = () => {
   NOP_VIEWER.search(query.value, (dbIds) => {
     NOP_VIEWER.isolate(dbIds)
     NOP_VIEWER.fitToView(dbIds)
-    NOP_VIEWER.model.getBulkProperties(dbIds, ['Length', 'Area', 'Volume'], (res) => {
-      let suma = {
-        count: res.length,
-        length: 0.00,
-        area: 0.00,
-        volume: 0.00
+    NOP_VIEWER.model.getBulkProperties(
+      dbIds,
+      ['Length', 'Area', 'Volume'],
+      (res) => {
+        let suma = {
+          count: res.length,
+          length: 0.0,
+          area: 0.0,
+          volume: 0.0,
+        }
+        res.forEach((item) => {
+          const length = item.properties.find((x) => x.displayName === 'Length')
+          if (length) {
+            suma.length += length.displayValue
+          }
+          const area = item.properties.find((x) => x.displayName === 'Area')
+          if (area) {
+            suma.area += area.displayValue
+          }
+          const volume = item.properties.find((x) => x.displayName === 'Volume')
+          if (volume) {
+            suma.volume += volume.displayValue
+          }
+        })
+        const textoArea = document.getElementById('textoArea')
+        textoArea.textContent = `El sumatorio de Área de la búsqueda es ${suma.area.toFixed(
+          2
+        )} m2.`
+        console.log(suma)
       }
-      res.forEach(item => {
-        const length = item.properties.find(x => x.displayName === 'Length')
-        if (length) {
-          suma.length += length.displayValue
-        }
-        const area = item.properties.find(x => x.displayName === 'Area')
-        if (area) {
-          suma.area += area.displayValue
-        }
-        const volume = item.properties.find(x => x.displayName === 'Volume')
-        if (volume) {
-          suma.volume += volume.displayValue
-        }
-      })
-      const textoArea = document.getElementById('textoArea')
-      textoArea.textContent = `El sumatorio de Área de la búsqueda es ${suma.area.toFixed(2)} m2.`
-      console.log(suma)
-    })
+    )
   })
 }
 
