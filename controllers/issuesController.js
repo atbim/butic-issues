@@ -15,11 +15,11 @@ const createIssue = async (req, res, next) => {
 
 const getAllIssues = async (req, res, next) => {
   try {
-    const issues = await Issue.find()
+    const issues = await Issue.find().select('name')
     res.status(200).json({
       status: 'success',
       number: issues.length,
-      data: issues
+      data: issues,
     })
   } catch (error) {
     console.log(error)
@@ -31,10 +31,17 @@ const getOneIssue = async (req, res, next) => {
   try {
     const id = req.params.id
     const issue = await Issue.findById(id)
-    res.status(200).json({
-      status: 'success',
-      data: issue
-    })
+    if (!issue) {
+      res.status(404).json({
+        status: 'error',
+        message: `No se encuentra un Issue con el Id ${id}.`,
+      })
+    } else {
+      res.status(200).json({
+        status: 'success',
+        data: issue,
+      })
+    }
   } catch (error) {
     console.log(error)
     res.status(400).json({ status: 'error', message: error })
@@ -48,10 +55,17 @@ const updateOneIssue = async (req, res, next) => {
       new: true,
       runValidators: true,
     })
-    res.status(200).json({
-      status: 'success',
-      data: issue,
-    })
+    if (!issue) {
+      res.status(404).json({
+        status: 'error',
+        message: `No se encuentra un Issue con el Id ${id}.`,
+      })
+    } else {
+      res.status(200).json({
+        status: 'success',
+        data: issue,
+      })
+    }
   } catch (error) {
     console.log(error)
     res.status(400).json({ status: 'error', message: error })
@@ -61,8 +75,15 @@ const updateOneIssue = async (req, res, next) => {
 const deleteOneIssue = async (req, res, next) => {
   try {
     const id = req.params.id
-    await Issue.findByIdAndDelete(id)
-    res.status(204).json()
+    const issue = await Issue.findByIdAndDelete(id)
+    if (!issue) {
+      res.status(404).json({
+        status: 'error',
+        message: `No se encuentra un Issue con el Id ${id}.`,
+      })
+    } else {
+      res.status(204).json()
+    }
   } catch (error) {
     console.log(error)
     res.status(400).json({ status: 'error', message: error })

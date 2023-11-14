@@ -12,7 +12,10 @@ const IssueSchema = new mongoose.Schema({
   date: {
     type: Date,
     default: Date.now // Gestionar Date con unix timestamp
-  }
+  },
+  dbIds: [{
+    type: Number,
+  }]
 })
 
 const Issue = mongoose.model('Issue', IssueSchema)

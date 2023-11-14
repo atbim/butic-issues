@@ -1,29 +1,13 @@
 import { initViewer, loadModel } from './viewer.js'
+import { initIssues } from './issues.js'
 
-const miPrimeraFuncion = async () => {
+const miPrimeraFuncion = () => {
   const button = document.getElementById('myFirstButton')
   const resetButton = document.getElementById('resetButton')
-  const getIssuesButton = document.getElementById('getIssuesButton')
-  button.addEventListener('click', onButtonClick)
-  resetButton.addEventListener('click', onResetClick)
   
-  const res = await fetch('/api/issues')
-    const json = await res.json()
-    const issuesDiv = document.getElementById('issues')
-    issuesDiv.innerHTML = ''
-    const issuesList = document.createElement('ul')
-    json.data.forEach(issue => {
-      const issueItem = document.createElement('li')
-      issueItem.textContent = issue.name
-      issueItem.id = issue._id
-      issueItem.addEventListener('click', (e) => {
-        const issueId = e.currentTarget.id
-        alert(`Has clicado en el Issue: ${issueId}`)
-        NOP_VIEWER.select([2213, 2590])
-      })
-      issuesList.appendChild(issueItem)
-    })
-    issuesDiv.appendChild(issuesList)
+  button.addEventListener('click', onButtonClick)
+  resetButton.addEventListener('click', onResetClick) 
+  
 }
 
 const onButtonClick = () => {
@@ -74,6 +58,7 @@ const onResetClick = () => {
 miPrimeraFuncion()
 
 initViewer(document.getElementById('preview')).then((viewer) => {
+  initIssues(viewer)
   const urn = window.location.hash?.substring(1)
   setupModelSelection(viewer, urn)
   setupModelUpload(viewer)
