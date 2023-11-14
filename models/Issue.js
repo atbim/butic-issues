@@ -10,12 +10,19 @@ const IssueSchema = new mongoose.Schema({
   },
   description: String,
   date: {
-    type: Date,
-    default: Date.now // Gestionar Date con unix timestamp
-  },
-  dbIds: [{
     type: Number,
-  }]
+    default: Date.now,
+  },
+  dbIds: [
+    {
+      type: Number,
+    },
+  ],
+  status: {
+    type: String,
+    enum: ['Leve', 'Moderado', 'Grave'],
+    default: 'Leve'
+  },
 })
 
 const Issue = mongoose.model('Issue', IssueSchema)

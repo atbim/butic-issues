@@ -15,7 +15,7 @@ const createIssue = async (req, res, next) => {
 
 const getAllIssues = async (req, res, next) => {
   try {
-    const issues = await Issue.find().select('name')
+    const issues = await Issue.find().select('name status number')
     res.status(200).json({
       status: 'success',
       number: issues.length,
@@ -90,10 +90,38 @@ const deleteOneIssue = async (req, res, next) => {
   }
 }
 
+const getDbIdsByStatus = async (req, res, next) => {
+  try {
+    const groupedDbIds = await Issue.aggregate([
+      {
+        $group: {
+          _id: '$status',
+          dbIds: { $addToSet: '$dbIds' },
+        },
+      },
+    ])
+
+    const flattenedDbIds = groupedDbIds.map((group) => ({
+      _id: group._id,
+      dbIds: [].concat(...group.dbIds),
+    }))
+
+    res.status(200).json({
+      status: 'success',
+      number: flattenedDbIds.length,
+      data: flattenedDbIds,
+    })
+  } catch (error) {
+    console.log(error)
+    res.status(400).json({ status: 'error', message: error })
+  }
+}
+
 module.exports = {
   createIssue,
   getAllIssues,
   getOneIssue,
   deleteOneIssue,
   updateOneIssue,
+  getDbIdsByStatus,
 }
