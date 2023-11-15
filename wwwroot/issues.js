@@ -1,4 +1,5 @@
 let _viewer
+let _categories
 const leveColor = new THREE.Vector4(1, 1, 0, 1)
 const moderadoColor = new THREE.Vector4(1, 0.5, 0, 1)
 const graveColor = new THREE.Vector4(1, 0, 0, 1)
@@ -27,11 +28,61 @@ const loadIssues = async () => {
   issuesDiv.appendChild(issuesList)
 }
 
+const onlyUnique = (value, index, array) => {
+  return array.indexOf(value) === index
+}
+
+const loadCategories = (parameter) => {
+  return new Promise((resolve, reject) => {
+    _viewer.model.getBulkProperties(
+      null,
+      [parameter],
+      (res) => {
+        let categories = {}
+        res.forEach((item) => {
+          const category = item.properties[0].displayValue
+          // Compruebo si ya existe la categoria
+          if (categories[category] == undefined) {
+            categories[category] = {
+              count: 0,
+              dbIds: [],
+            }
+          }
+          categories[category].count++
+          categories[category].dbIds.push(item.dbId)
+        })
+        resolve(categories)
+      },
+      (err) => {
+        reject(err)
+      }
+    )
+  })
+}
+
+const printCategories = () => {
+  const categoriasDiv = document.getElementById('categorias')
+  const categoriesList = document.createElement('ul')
+  for (const key in _categories) {
+    const categoryItem = document.createElement('li')
+    categoryItem.textContent = `${key} | ${_categories[key].count}`
+    categoryItem.id = key
+    categoryItem.addEventListener('click', () => {
+      _viewer.isolate(_categories[key].dbIds)
+      _viewer.fitToView(_categories[key].dbIds)
+    })
+    categoriesList.appendChild(categoryItem)
+  }
+  categoriasDiv.appendChild(categoriesList)
+}
+
 const loadUI = () => {
   const createIssueForm = document.getElementById('createIssue')
   createIssueForm.addEventListener('submit', onFormSubmit)
 
-  _viewer.addEventListener(Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT, () => {
+  _viewer.addEventListener(Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT, async () => {
+    _categories = await loadCategories()
+    printCategories()
     const showAll = document.getElementById('showAll')
     const colorByStatus = document.getElementById('colorByStatus')
     showAll.disabled = false
@@ -82,7 +133,7 @@ const onFormSubmit = async (e) => {
   console.log('body: ', body)
 
   try {
-    // 3) Guardamos con Fetch POST el issue en la bbdd
+    // 3) Guardamos con Fetch POST el issue en la bbdd || esto es como si llamaramos desde postman
     const res = await fetch('/api/issues', {
       method: 'POST',
       headers: {
