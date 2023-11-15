@@ -6,6 +6,10 @@ const graveColor = new THREE.Vector4(1, 0, 0, 1)
 export const initIssues = async (viewer) => {
   _viewer = viewer
   loadUI()
+  loadIssues()
+}
+
+const loadIssues = async () => {
   const res = await fetch('/api/issues')
   const json = await res.json()
   const issuesDiv = document.getElementById('issues')
@@ -56,19 +60,50 @@ const loadUI = () => {
   })
 }
 
-const onFormSubmit = (e) => {
+const onFormSubmit = async (e) => {
+  // 1) Evitamos que el formulario actue por defecto y nos cambie el navegador
   e.preventDefault()
+
+  // 2) Recuperamos los valores del formulario y creamos el objeto body
   const number = document.getElementById('number').value
   const name = document.getElementById('name').value
+  const status = document.getElementById('status').value
+  const description = document.getElementById('description').value
   const dbIds = _viewer.getSelection()
 
   const body = {
     number,
     name,
     dbIds,
+    status,
+    description,
   }
 
   console.log('body: ', body)
+
+  try {
+    // 3) Guardamos con Fetch POST el issue en la bbdd
+    const res = await fetch('/api/issues', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    })
+    console.log('res: ', res)
+    // 4) Gestionamos el formulario en función de si se crea el Issue o no.
+    if (res.ok) {
+      document.getElementById('number').value = ''
+      document.getElementById('name').value = ''
+      _viewer.clearSelection()
+    } else {
+      alert('Hay que indicar número y nombre de Issue.')
+    }
+
+    loadIssues()
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 const onIssueClick = async (e) => {
