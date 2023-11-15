@@ -22,7 +22,6 @@ h1 {
 
 #panel {
     flex: 40%;
-    background-color: gray
 }
 
 #preview {
@@ -72,4 +71,14 @@ h1 {
 #models {
     flex: 0 1 auto;
     min-width: 2em;
+}
+
+.card {
+    width: 90%;
+    margin: 0 auto;
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: gray;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }

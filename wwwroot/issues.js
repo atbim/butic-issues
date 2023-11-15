@@ -24,28 +24,33 @@ export const initIssues = async (viewer) => {
 }
 
 const loadUI = () => {
-  const showAll = document.getElementById('showAll')
-  const colorByStatus = document.getElementById('colorByStatus')
-  showAll.addEventListener('click', () => {
-    _viewer.clearThemingColors()
-    _viewer.showAll()
-    _viewer.fitToView()
-  })
-  colorByStatus.addEventListener('click', async () => {
-    const res = await fetch('/api/issues/status')
-    const json = await res.json()
-    json.data.forEach(item => {
-      const status = item._id
-      if (status) {
-        item.dbIds.forEach(dbId => {
-          _viewer.setThemingColor(dbId, getColorByStatus(status))
-        })
-      }
+  _viewer.addEventListener(Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT, () => {
+    const showAll = document.getElementById('showAll')
+    const colorByStatus = document.getElementById('colorByStatus')
+    showAll.disabled = false
+    colorByStatus.hidden = false
+    showAll.addEventListener('click', () => {
+      _viewer.clearThemingColors()
+      _viewer.showAll()
+      _viewer.fitToView()
+    })
+    colorByStatus.addEventListener('click', async () => {
+      const res = await fetch('/api/issues/status')
+      const json = await res.json()
+      let dbIds = []
+      json.data.forEach((item) => {
+        const status = item._id
+        if (status) {
+          item.dbIds.forEach((dbId) => {
+            dbIds.push(dbId)
+            _viewer.setThemingColor(dbId, getColorByStatus(status))
+          })
+        }
+      })
+      _viewer.isolate(dbIds)
+      _viewer.fitToView(dbIds)
     })
   })
-
-  // Aislar solo los dbIds que tienen issues.
-  // Activar botones en función de eventos del viewer
 }
 
 const onIssueClick = async (e) => {
