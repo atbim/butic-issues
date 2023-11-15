@@ -24,6 +24,9 @@ export const initIssues = async (viewer) => {
 }
 
 const loadUI = () => {
+  const createIssueForm = document.getElementById('createIssue')
+  createIssueForm.addEventListener('submit', onFormSubmit)
+
   _viewer.addEventListener(Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT, () => {
     const showAll = document.getElementById('showAll')
     const colorByStatus = document.getElementById('colorByStatus')
@@ -51,6 +54,21 @@ const loadUI = () => {
       _viewer.fitToView(dbIds)
     })
   })
+}
+
+const onFormSubmit = (e) => {
+  e.preventDefault()
+  const number = document.getElementById('number').value
+  const name = document.getElementById('name').value
+  const dbIds = _viewer.getSelection()
+
+  const body = {
+    number,
+    name,
+    dbIds,
+  }
+
+  console.log('body: ', body)
 }
 
 const onIssueClick = async (e) => {

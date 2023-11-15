@@ -30,7 +30,15 @@
                 <button id="colorByStatus" title="Color by Status" hidden>Color by Status</button>
             </div>
             <div id="issues" class="card"></div>
-            <div id="issueForm" class="card">Este es mi tercer apartado</div>
+            <div id="issueForm" class="card">
+                <form id="createIssue">
+                    <label for="number">Number:</label><br>
+                    <input type="text" id="number" name="number"><br>
+                    <label for="name">Name:</label><br>
+                    <input type="text" id="name" name="name"><br><br>
+                    <input type="submit" value="Create Issue">
+                </form>
+            </div>
         </div>
         <div id="preview"></div>
     </div>
