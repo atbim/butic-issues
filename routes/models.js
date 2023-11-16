@@ -1,6 +1,8 @@
 const express = require('express')
 const formidable = require('express-formidable')
 const {
+  listBuckets,
+  createBucket,
   listObjects,
   uploadObject,
   translateObject,
@@ -9,6 +11,24 @@ const {
 } = require('../services/aps.js')
 
 let router = express.Router()
+
+router.get('/api/buckets', async (req, res, next) => {
+  try {
+    const buckets = await listBuckets()
+    res.status(200).json(buckets)
+  } catch (error) {
+    next(error)
+  }
+})
+
+router.post('/api/buckets', async (req, res, next) => {
+  try {
+    const bucket = await createBucket(req.body.name.toLocaleLowerCase())
+    res.status(200).json({ status: 'success', data: bucket })
+  } catch (error) {
+    next(error)
+  }
+})
 
 router.get('/api/models', async function (req, res, next) {
   try {

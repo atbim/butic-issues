@@ -52,6 +52,37 @@ service.ensureBucketExists = async (bucketKey) => {
   }
 }
 
+service.listBuckets = async () => {
+  const res = await new APS.BucketsApi().getBuckets(
+    {},
+    null,
+    await service.getInternalToken()
+  )
+  const buckets = res.body.items.map((bucket) => {
+    let name = bucket.bucketKey.split('-')[0]
+    if (name === process.env.APS_CLIENT_ID.toLowerCase()) {
+      name = '<sinNombre>'
+    }
+    return name
+  })
+
+  return buckets
+}
+
+service.createBucket = async (name) => {
+  const res = await new APS.BucketsApi().createBucket(
+    {
+      bucketKey: `${name}-${process.env.APS_CLIENT_ID.toLocaleLowerCase()}-basic-app`,
+      policyKey: 'persistent',
+    },
+    {},
+    null,
+    await service.getInternalToken()
+  )
+
+  return res.body
+}
+
 service.listObjects = async () => {
   await service.ensureBucketExists(APS_BUCKET)
   let resp = await new APS.ObjectsApi().getObjects(

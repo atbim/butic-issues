@@ -1,3 +1,5 @@
+import { getAllLeafComponentsAsync } from './utils.js'
+
 let _viewer
 let _categories
 const leveColor = new THREE.Vector4(1, 1, 0, 1)
@@ -18,9 +20,10 @@ const loadIssues = async () => {
   const issuesList = document.createElement('ul')
   json.data.forEach((issue) => {
     const issueItem = document.createElement('li')
-    issueItem.textContent = `#${issue.number} ${issue.name}`
-    const color = getColorHexByStatus(issue.status)
-    issueItem.style.color = color
+    const circulo = document.createElement('div')
+    circulo.className = `circulo ${issue.status}`
+    issueItem.appendChild(circulo)
+    issueItem.appendChild(document.createTextNode(`#${issue.number} ${issue.name}`))
     issueItem.id = issue._id
     issueItem.addEventListener('click', onIssueClick)
     issuesList.appendChild(issueItem)
@@ -32,10 +35,11 @@ const onlyUnique = (value, index, array) => {
   return array.indexOf(value) === index
 }
 
-const loadCategories = (parameter) => {
+const loadCategories = async (parameter) => {
+  const dbIds = await getAllLeafComponentsAsync(_viewer)
   return new Promise((resolve, reject) => {
     _viewer.model.getBulkProperties(
-      null,
+      dbIds,
       [parameter],
       (res) => {
         let categories = {}
@@ -80,35 +84,38 @@ const loadUI = () => {
   const createIssueForm = document.getElementById('createIssue')
   createIssueForm.addEventListener('submit', onFormSubmit)
 
-  _viewer.addEventListener(Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT, async () => {
-    _categories = await loadCategories()
-    printCategories()
-    const showAll = document.getElementById('showAll')
-    const colorByStatus = document.getElementById('colorByStatus')
-    showAll.disabled = false
-    colorByStatus.hidden = false
-    showAll.addEventListener('click', () => {
-      _viewer.clearThemingColors()
-      _viewer.showAll()
-      _viewer.fitToView()
-    })
-    colorByStatus.addEventListener('click', async () => {
-      const res = await fetch('/api/issues/status')
-      const json = await res.json()
-      let dbIds = []
-      json.data.forEach((item) => {
-        const status = item._id
-        if (status) {
-          item.dbIds.forEach((dbId) => {
-            dbIds.push(dbId)
-            _viewer.setThemingColor(dbId, getColorByStatus(status))
-          })
-        }
+  _viewer.addEventListener(
+    Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT,
+    async () => {
+      _categories = await loadCategories('Category')
+      printCategories()
+      const showAll = document.getElementById('showAll')
+      const colorByStatus = document.getElementById('colorByStatus')
+      showAll.disabled = false
+      colorByStatus.hidden = false
+      showAll.addEventListener('click', () => {
+        _viewer.clearThemingColors()
+        _viewer.showAll()
+        _viewer.fitToView()
       })
-      _viewer.isolate(dbIds)
-      _viewer.fitToView(dbIds)
-    })
-  })
+      colorByStatus.addEventListener('click', async () => {
+        const res = await fetch('/api/issues/status')
+        const json = await res.json()
+        let dbIds = []
+        json.data.forEach((item) => {
+          const status = item._id
+          if (status) {
+            item.dbIds.forEach((dbId) => {
+              dbIds.push(dbId)
+              _viewer.setThemingColor(dbId, getColorByStatus(status))
+            })
+          }
+        })
+        _viewer.isolate(dbIds)
+        _viewer.fitToView(dbIds)
+      })
+    }
+  )
 }
 
 const onFormSubmit = async (e) => {

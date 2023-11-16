@@ -95,3 +95,32 @@ button {
 button:hover {
     background-color: #0056b3;
 }
+
+.list {
+    height: 25%;
+    overflow-y: auto;
+}
+
+ul {
+    list-style-type: none;
+}
+
+.circulo {
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.Leve {
+    background-color: yellow;
+}
+
+.Moderado {
+    background-color: orange;
+}
+
+.Grave {
+    background-color: red;
+}
