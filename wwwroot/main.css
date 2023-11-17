@@ -124,3 +124,10 @@ ul {
 .Grave {
     background-color: red;
 }
+
+.half {
+    flex: 1;
+    height: 100%;
+    text-align: center;
+    padding: 20px;
+}

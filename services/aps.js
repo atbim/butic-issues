@@ -83,10 +83,10 @@ service.createBucket = async (name) => {
   return res.body
 }
 
-service.listObjects = async () => {
-  await service.ensureBucketExists(APS_BUCKET)
+service.listObjects = async (bucketKey) => {
+  await service.ensureBucketExists(bucketKey)
   let resp = await new APS.ObjectsApi().getObjects(
-    APS_BUCKET,
+    bucketKey,
     { limit: 64 },
     null,
     await service.getInternalToken()
@@ -95,7 +95,7 @@ service.listObjects = async () => {
   while (resp.body.next) {
     const startAt = new URL(resp.body.next).searchParams.get('startAt')
     resp = await new APS.ObjectsApi().getObjects(
-      APS_BUCKET,
+      bucketKey,
       { limit: 64, startAt },
       null,
       await service.getInternalToken()

@@ -30,9 +30,15 @@ router.post('/api/buckets', async (req, res, next) => {
   }
 })
 
-router.get('/api/models', async function (req, res, next) {
+router.get('/api/models/:bucketKey', async function (req, res, next) {
   try {
-    const objects = await listObjects()
+    let bucketKey = req.params.bucketKey
+    if (bucketKey === '<sinNombre>') {
+      bucketKey = process.env.APS_CLIENT_ID.toLowerCase() + '-basic-app'
+    } else {
+      bucketKey = `${bucketKey}-${process.env.APS_CLIENT_ID.toLowerCase()}-basic-app`
+    }
+    const objects = await listObjects(bucketKey)
     res.json(
       objects.map((o) => ({
         name: o.objectKey,
