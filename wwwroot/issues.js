@@ -13,7 +13,7 @@ export const initIssues = async (viewer) => {
 }
 
 const loadIssues = async () => {
-  const res = await fetch('/api/issues')
+  const res = await fetch('/api/issues/:urn')
   const json = await res.json()
   const issuesDiv = document.getElementById('issues')
   issuesDiv.innerHTML = ''

@@ -105,11 +105,11 @@ service.listObjects = async (bucketKey) => {
   return objects
 }
 
-service.uploadObject = async (objectName, filePath) => {
-  await service.ensureBucketExists(APS_BUCKET)
+service.uploadObject = async (bucketKey, objectName, filePath) => {
+  await service.ensureBucketExists(bucketKey)
   const buffer = await fs.promises.readFile(filePath)
   const results = await new APS.ObjectsApi().uploadResources(
-    APS_BUCKET,
+    bucketKey,
     [{ objectKey: objectName, data: buffer }],
     { useAcceleration: false, minutesExpiration: 15 },
     null,

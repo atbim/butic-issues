@@ -78,18 +78,28 @@ router.get('/api/models/:urn/status', async function (req, res, next) {
   }
 })
 
-router.post('/api/models', formidable(), async function (req, res, next) {
+router.post('/api/models/:bucketKey', formidable(), async function (req, res, next) {
+  let bucketKey = req.params.bucketKey
+  if (bucketKey === '<sinNombre>') {
+    bucketKey = process.env.APS_CLIENT_ID.toLowerCase() + '-basic-app'
+  } else {
+    bucketKey = `${bucketKey}-${process.env.APS_CLIENT_ID.toLowerCase()}-basic-app`
+  }
+  console.log('bucketKey: ', bucketKey)
   const file = req.files['model-file']
   if (!file) {
     res.status(400).send('The required field ("model-file") is missing.')
     return
   }
   try {
-    const obj = await uploadObject(file.name, file.path)
+    console.log('voy a subir el fichero')
+    const obj = await uploadObject(bucketKey, file.name, file.path)
+    console.log('obj: ', obj)
     await translateObject(
       urnify(obj.objectId),
       req.fields['model-zip-entrypoint']
     )
+    console.log('fichero transformado')
     res.json({
       name: obj.objectKey,
       urn: urnify(obj.objectId),
