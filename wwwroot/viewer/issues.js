@@ -13,7 +13,7 @@ export const initIssues = async (viewer) => {
 }
 
 const loadIssues = async () => {
-  const res = await fetch('/api/issues/:urn')
+  const res = await fetch('/api/issues')
   const json = await res.json()
   const issuesDiv = document.getElementById('issues')
   issuesDiv.innerHTML = ''
@@ -23,7 +23,9 @@ const loadIssues = async () => {
     const circulo = document.createElement('div')
     circulo.className = `circulo ${issue.status}`
     issueItem.appendChild(circulo)
-    issueItem.appendChild(document.createTextNode(`#${issue.number} ${issue.name}`))
+    issueItem.appendChild(
+      document.createTextNode(`#${issue.number} ${issue.name}`)
+    )
     issueItem.id = issue._id
     issueItem.addEventListener('click', onIssueClick)
     issuesList.appendChild(issueItem)

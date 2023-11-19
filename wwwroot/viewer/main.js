@@ -4,10 +4,13 @@ import { initIssues } from './issues.js'
 const miPrimeraFuncion = () => {
   const button = document.getElementById('myFirstButton')
   const resetButton = document.getElementById('resetButton')
-  
+  const goBackBuckets = document.getElementById('goBackBuckets')
+
   button.addEventListener('click', onButtonClick)
-  resetButton.addEventListener('click', onResetClick) 
-  
+  resetButton.addEventListener('click', onResetClick)
+  goBackBuckets.addEventListener('click', () => {
+    window.location.href = '/'
+  })
 }
 
 const onButtonClick = () => {

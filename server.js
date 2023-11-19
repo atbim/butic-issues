@@ -18,8 +18,8 @@ app.use('/api/endpoint', miPrimerRouter)
 app.use('/api/issues', issuesRouter)
 
 // Routing
-app.get('/buckets', (req, res) => {
-  res.sendFile(__dirname + '/wwwroot/buckets')
+app.get('/viewer', (req, res) => {
+  res.sendFile(__dirname + '/wwwroot/viewer')
 })
 
 app.listen(PORT, function () {

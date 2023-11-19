@@ -70,7 +70,7 @@ const onBucketClick = async (e) => {
 
 const onModelClick = (e) => {
   const urn = e.currentTarget.id
-  window.location.href = '/?urn=' + urn
+  window.location.href = '/viewer?urn=' + urn
 }
 
 const onFormSubmit = async (e) => {
