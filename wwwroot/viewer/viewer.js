@@ -18,7 +18,7 @@ export function initViewer(container) {
   return new Promise(function (resolve, reject) {
     Autodesk.Viewing.Initializer({ getAccessToken }, function () {
       const config = {
-        extensions: [],
+        extensions: ['Autodesk.DocumentBrowser'],
       }
       const viewer = new Autodesk.Viewing.GuiViewer3D(container, config)
       viewer.start()
@@ -35,6 +35,7 @@ export function loadModel(viewer, urn, is2d) {
       console.log('root: ', root)
       let node = root.getDefaultGeometry()
       if (is2d) {
+        doc.downloadAecModelData((res) => console.log('aecdata: ', res))
         const nodes2d = root.getSheetNodes()
         const dropdown = document.getElementById('nodes2d')
         dropdown.innerHTML = nodes2d
@@ -46,7 +47,7 @@ export function loadModel(viewer, urn, is2d) {
         dropdown.addEventListener('change', (e) => {
           const guid = e.currentTarget.value
           const actualNode = viewer.model.getDocumentNode()
-          viewer.unloadDocumentNode(actualNode)
+          //viewer.unloadDocumentNode(actualNode)
           const newNode = root.findByGuid(guid)
           viewer.loadDocumentNode(doc, newNode)
         })

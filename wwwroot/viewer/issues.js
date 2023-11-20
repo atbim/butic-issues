@@ -130,6 +130,14 @@ const loadUI = () => {
   )
 }
 
+const getPropertiesAync = (dbId) => {
+  return new Promise((resolve) => {
+    _viewer.getProperties(dbId, (res) => {
+      resolve(res.externalId)
+    })
+  })
+}
+
 const onFormSubmit = async (e) => {
   // 1) Evitamos que el formulario actue por defecto y nos cambie el navegador
   e.preventDefault()
@@ -140,6 +148,13 @@ const onFormSubmit = async (e) => {
   const status = document.getElementById('status').value
   const description = document.getElementById('description').value
   const dbIds = _viewer.getSelection()
+  let externalIds = []
+  
+  for (const dbId of dbIds) {
+    const externalId = await getPropertiesAync(dbId)
+    externalIds.push(externalId)
+  }
+  console.log('externalIds: ', externalIds)
 
   const body = {
     number,

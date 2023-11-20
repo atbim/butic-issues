@@ -1,0 +1,6 @@
+MVC
+Mongoose
+html, css, javascript
+cuando acabeis la linea 3 => Angular, React, Vue (para desarrollar cliente)
+es posible que no os dejen utilizar NoSQL (mongoDb) => Tedious https://www.npmjs.com/package/tedious
+Express => la última

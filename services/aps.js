@@ -54,7 +54,7 @@ service.ensureBucketExists = async (bucketKey) => {
 
 service.listBuckets = async () => {
   const res = await new APS.BucketsApi().getBuckets(
-    {limit: 100},
+    { limit: 100 },
     null,
     await service.getInternalToken()
   )
@@ -87,7 +87,7 @@ service.getThumbnail = async (urn) => {
   try {
     const res = await new APS.DerivativesApi().getThumbnail(
       urn,
-      {width: 400},
+      { width: 400 },
       null,
       await service.getInternalToken()
     )
@@ -97,7 +97,6 @@ service.getThumbnail = async (urn) => {
     console.error('Error en getThumbnail:', error)
     return 'no-image'
   }
-  
 }
 
 service.listObjects = async (bucketKey) => {
@@ -142,7 +141,15 @@ service.uploadObject = async (bucketKey, objectName, filePath) => {
 service.translateObject = async (urn, rootFilename) => {
   const job = {
     input: { urn },
-    output: { formats: [{ type: 'svf', views: ['2d', '3d'] }] },
+    output: {
+      formats: [
+        {
+          type: 'svf',
+          views: ['2d', '3d'],
+          advance: { generateMasterViews: true },
+        },
+      ],
+    },
   }
   if (rootFilename) {
     job.input.compressedUrn = true
