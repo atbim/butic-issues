@@ -61,10 +61,14 @@ const onResetClick = () => {
 miPrimeraFuncion()
 
 initViewer(document.getElementById('preview')).then((viewer) => {
-  initIssues(viewer)
   const urlParams = new URLSearchParams(window.location.search)
   const urn = urlParams.get('urn')
   loadModel(viewer, urn)
+
+  initViewer(document.getElementById('preview2')).then(viewer2d => {
+    initIssues(viewer, viewer2d)
+    loadModel(viewer2d, urn, true)
+  })
 })
 
 async function setupModelSelection(viewer, selectedUrn) {

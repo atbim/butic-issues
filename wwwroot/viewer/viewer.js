@@ -28,10 +28,32 @@ export function initViewer(container) {
   })
 }
 
-export function loadModel(viewer, urn) {
+export function loadModel(viewer, urn, is2d) {
   return new Promise(function (resolve, reject) {
     function onDocumentLoadSuccess(doc) {
-      resolve(viewer.loadDocumentNode(doc, doc.getRoot().getDefaultGeometry()))
+      const root = doc.getRoot()
+      console.log('root: ', root)
+      let node = root.getDefaultGeometry()
+      if (is2d) {
+        const nodes2d = root.getSheetNodes()
+        const dropdown = document.getElementById('nodes2d')
+        dropdown.innerHTML = nodes2d
+          .map(
+            (node2d) =>
+              `<option value=${node2d.data.guid}>${node2d.data.name}</option>`
+          )
+          .join('\n')
+        dropdown.addEventListener('change', (e) => {
+          const guid = e.currentTarget.value
+          const actualNode = viewer.model.getDocumentNode()
+          viewer.unloadDocumentNode(actualNode)
+          const newNode = root.findByGuid(guid)
+          viewer.loadDocumentNode(doc, newNode)
+        })
+        node = nodes2d[0]
+        console.log('node: ', node)
+      }
+      resolve(viewer.loadDocumentNode(doc, node))
     }
     function onDocumentLoadFailure(code, message, errors) {
       reject({ code, message, errors })

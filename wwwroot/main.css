@@ -24,9 +24,14 @@ h1 {
     flex: 40%;
 }
 
-#preview {
-    position: relative;
+.viewers {
     flex: 60%;
+}
+
+#preview,
+#preview2 {
+    position: relative; 
+    height: calc((100vh - 3em) / 2);
 }
 
 #header {

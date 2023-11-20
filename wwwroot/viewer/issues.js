@@ -1,13 +1,15 @@
 import { getAllLeafComponentsAsync } from './utils.js'
 
 let _viewer
+let _viewer2d
 let _categories
 const leveColor = new THREE.Vector4(1, 1, 0, 1)
 const moderadoColor = new THREE.Vector4(1, 0.5, 0, 1)
 const graveColor = new THREE.Vector4(1, 0, 0, 1)
 
-export const initIssues = async (viewer) => {
+export const initIssues = async (viewer, viewer2d) => {
   _viewer = viewer
+  _viewer2d = viewer2d
   loadUI()
   loadIssues()
 }
@@ -76,6 +78,8 @@ const printCategories = () => {
     categoryItem.addEventListener('click', () => {
       _viewer.isolate(_categories[key].dbIds)
       _viewer.fitToView(_categories[key].dbIds)
+      _viewer2d.isolate(_categories[key].dbIds)
+      _viewer2d.fitToView(_categories[key].dbIds)
     })
     categoriesList.appendChild(categoryItem)
   }
@@ -99,6 +103,9 @@ const loadUI = () => {
         _viewer.clearThemingColors()
         _viewer.showAll()
         _viewer.fitToView()
+        _viewer2d.clearThemingColors()
+        _viewer2d.showAll()
+        _viewer2d.fitToView()
       })
       colorByStatus.addEventListener('click', async () => {
         const res = await fetch('/api/issues/status')
@@ -110,11 +117,14 @@ const loadUI = () => {
             item.dbIds.forEach((dbId) => {
               dbIds.push(dbId)
               _viewer.setThemingColor(dbId, getColorByStatus(status))
+              _viewer2d.setThemingColor(dbId, getColorByStatus(status))
             })
           }
         })
         _viewer.isolate(dbIds)
         _viewer.fitToView(dbIds)
+        _viewer2d.isolate(dbIds)
+        _viewer2d.fitToView(dbIds)
       })
     }
   )
@@ -173,9 +183,12 @@ const onIssueClick = async (e) => {
   const color = getColorByStatus(json.data.status)
   json.data.dbIds.forEach((dbId) => {
     _viewer.setThemingColor(dbId, color)
+    _viewer2d.setThemingColor(dbId, color)
   })
   _viewer.isolate(json.data.dbIds)
   _viewer.fitToView(json.data.dbIds)
+  _viewer2d.isolate(json.data.dbIds)
+  _viewer2d.fitToView(json.data.dbIds)
 }
 
 const getColorHexByStatus = (status) => {

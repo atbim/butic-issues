@@ -87,7 +87,7 @@ service.getThumbnail = async (urn) => {
   try {
     const res = await new APS.DerivativesApi().getThumbnail(
       urn,
-      {},
+      {width: 400},
       null,
       await service.getInternalToken()
     )
