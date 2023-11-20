@@ -131,3 +131,14 @@ ul {
     text-align: center;
     padding: 20px;
 }
+
+.bucketCard {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px;
+    text-align: center;
+    display: inline-block;
+    width: 350px;
+    height: 250px;
+}

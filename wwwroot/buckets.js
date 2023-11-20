@@ -1,38 +1,87 @@
 const init = () => {
   const bucketForm = document.getElementById('createBucket')
-  bucketForm.addEventListener('submit', onFormSubmit)
-
+  bucketForm.addEventListener('click', onFormSubmit)
   listBuckets()
 }
 
 const listBuckets = async () => {
   const res = await fetch('/api/buckets')
   const json = await res.json()
-  const bucketsDiv = document.getElementById('buckets')
-  bucketsDiv.innerHTML = ''
-  const bucketsList = document.createElement('ul')
+  const buckets = document.getElementById('buckets')
+  buckets.innerHTML = ''
+  const initOption = document.createElement('option')
+  initOption.selected = true
+  initOption.disabled = true
+  initOption.textContent = 'Elige un bucket'
+  buckets.appendChild(initOption)
   json.forEach((bucket) => {
-    const bucketItem = document.createElement('li')
-    bucketItem.textContent = bucket
-    bucketItem.id = bucket
-    bucketItem.addEventListener('click', onBucketClick)
-    bucketsList.appendChild(bucketItem)
+    const bucketElement = document.createElement('option')
+    bucketElement.value = bucket
+    bucketElement.textContent = bucket
+    buckets.appendChild(bucketElement)
   })
-  bucketsDiv.appendChild(bucketsList)
+  buckets.addEventListener('change', onBucketSelect)
 }
 
-const onBucketClick = async (e) => {
-  const bucketId = e.currentTarget.id
+const onBucketSelect = async (e) => {
+  const bucketId = e.currentTarget.value
   const res = await fetch(`/api/models/${bucketId}`)
   const json = await res.json()
+  const cardContainer = document.getElementById('cardContainer')
+
+  // Limpia el contenedor antes de agregar nuevos cards
+  cardContainer.innerHTML = ''
+  const cardRow = document.createElement('div')
+  cardRow.className = 'd-flex flex-row'
   const input = document.getElementById('input')
+  input.hidden = false
+  // Construye y agrega los cards dinámicamente
+  json.forEach((cardData) => {
+    const card = document.createElement('div')
+    card.className = 'card'
+    card.className = 'card m-3'
+    card.style = 'width: 18rem;'
+
+    const cardImg = document.createElement('img')
+    cardImg.className = 'card-img-top'
+    cardImg.src = 'data:image/png;base64,' + cardData.thumbnail
+    cardImg.alt = 'Card image cap'
+
+    const cardBody = document.createElement('div')
+    cardBody.className = 'card-body'
+
+    const cardTitle = document.createElement('h5')
+    cardTitle.className = 'card-title'
+    cardTitle.textContent = cardData.name
+
+    const cardLink = document.createElement('a')
+    cardLink.href = '/viewer?urn=' + cardData.urn
+    cardLink.className = 'btn btn-primary'
+    cardLink.textContent = 'Go to Viewer'
+
+    // Agrega elementos al cardBody
+    cardBody.appendChild(cardTitle)
+    cardBody.appendChild(cardLink)
+
+    // Agrega elementos al card
+    card.appendChild(cardImg)
+    card.appendChild(cardBody)
+
+    // Agrega el card al contenedor
+    cardRow.appendChild(card)
+  })
+  cardContainer.appendChild(cardRow)
+
   input.onchange = async () => {
     const file = input.files[0]
     let data = new FormData()
     data.append('model-file', file)
     try {
       console.log('bucketId: ', bucketId)
-      const resp = await fetch(`/api/models/${bucketId}`, { method: 'POST', body: data })
+      const resp = await fetch(`/api/models/${bucketId}`, {
+        method: 'POST',
+        body: data,
+      })
       if (!resp.ok) {
         throw new Error(await resp.text())
       }
@@ -47,25 +96,6 @@ const onBucketClick = async (e) => {
       input.value = ''
     }
   }
-  const modelsDiv = document.getElementById('models')
-  modelsDiv.innerHTML = ''
-  if (json.length > 0) {
-    const modelsList = document.createElement('ul')
-    json.forEach((model) => {
-      const modelItem = document.createElement('li')
-      modelItem.textContent = model.name
-      modelItem.id = model.urn
-      modelItem.addEventListener('click', onModelClick)
-      modelsList.appendChild(modelItem)
-    })
-    modelsDiv.appendChild(modelsList)
-  } else {
-    modelsDiv.appendChild(
-      document.createTextNode(
-        'El bucket seleccionado no tiene modelos. Añade uno con el botón de Upload 🚀'
-      )
-    )
-  }
 }
 
 const onModelClick = (e) => {
@@ -73,8 +103,7 @@ const onModelClick = (e) => {
   window.location.href = '/viewer?urn=' + urn
 }
 
-const onFormSubmit = async (e) => {
-  e.preventDefault()
+const onFormSubmit = async () => {
   const bucketName = document.getElementById('bucketName').value
   const body = {
     name: bucketName,
@@ -86,6 +115,8 @@ const onFormSubmit = async (e) => {
     },
     body: JSON.stringify(body),
   })
+
+  console.log('res: ', res)
 
   listBuckets()
 }

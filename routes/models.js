@@ -4,6 +4,7 @@ const {
   listBuckets,
   createBucket,
   listObjects,
+  getThumbnail,
   uploadObject,
   translateObject,
   getManifest,
@@ -40,10 +41,18 @@ router.get('/api/models/:bucketKey', async function (req, res, next) {
     }
     const objects = await listObjects(bucketKey)
     res.json(
-      objects.map((o) => ({
-        name: o.objectKey,
-        urn: urnify(o.objectId),
-      }))
+      await Promise.all(
+        objects.map(async (o) => {
+          const urn = urnify(o.objectId)
+          const thumbnail = await getThumbnail(urn)
+
+          return {
+            name: o.objectKey,
+            urn,
+            thumbnail: thumbnail,
+          }
+        })
+      )
     )
   } catch (err) {
     next(err)

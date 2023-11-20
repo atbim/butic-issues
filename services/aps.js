@@ -54,7 +54,7 @@ service.ensureBucketExists = async (bucketKey) => {
 
 service.listBuckets = async () => {
   const res = await new APS.BucketsApi().getBuckets(
-    {},
+    {limit: 100},
     null,
     await service.getInternalToken()
   )
@@ -81,6 +81,23 @@ service.createBucket = async (name) => {
   )
 
   return res.body
+}
+
+service.getThumbnail = async (urn) => {
+  try {
+    const res = await new APS.DerivativesApi().getThumbnail(
+      urn,
+      {},
+      null,
+      await service.getInternalToken()
+    )
+
+    return res.body.toString('base64')
+  } catch (error) {
+    console.error('Error en getThumbnail:', error)
+    return 'no-image'
+  }
+  
 }
 
 service.listObjects = async (bucketKey) => {
